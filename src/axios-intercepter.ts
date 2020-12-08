@@ -37,9 +37,13 @@ function cloudflareResponseInterceptor(response) {
 
 async function cloudflareResponseErrorInterceptor(error) {
   if (isCloudflareIUAMError(error)) {
-    const { config } = error;
-    await fillCookiesJar(axios, config);
-    return axios(config);
+    try {
+      const { config } = error;
+      await fillCookiesJar(axios, config);
+      return axios(config);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
   // throw error;
   return Promise.reject(error);
