@@ -40,7 +40,7 @@ async function cloudflareResponseErrorInterceptor(error) {
     try {
       const { config } = error;
       await fillCookiesJar(axios, config);
-      return axios(config);
+      return await axios(config);
     } catch (e) {
       return Promise.reject(e);
     }
