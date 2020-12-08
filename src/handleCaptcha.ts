@@ -33,7 +33,7 @@ function extractChallengeData(content) {
   return postData;
 }
 
-export async function handleCaptcha(content, request, options) {
+export async function handleCaptcha(content, axios, options) {
   let { uri, url, solveCaptcha } = options;
   url = url || uri;
 
@@ -52,16 +52,15 @@ export async function handleCaptcha(content, request, options) {
     postData['g-captcha-response'] = captchaResponse;
     postData['h-captcha-response'] = captchaResponse;
     const { href } = new URL(challengeFormAction, url);
-    await request({
+    await axios({
       ...options,
-      method: 'POST',
-      simple: false,
-      uri: href.replace('&amp;', '&'),
+      method: 'post',
+      url: href.replace('&amp;', '&'),
       headers: {
         ...options.headers,
         'content-type': 'application/x-www-form-urlencoded'
       },
-      form: postData
+      data: postData
     });
   } else {
     throw new Error("solveCaptcha didn't returned a captcha");

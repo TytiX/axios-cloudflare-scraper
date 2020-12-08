@@ -23,7 +23,7 @@ function convertCookieToTough(cookie) {
   });
 }
 
-export async function fillCookiesJar(request, options) {
+export async function fillCookiesJar(axios, options) {
   let { jar, url, uri } = options;
   url = url || uri;
 
@@ -38,7 +38,7 @@ export async function fillCookiesJar(request, options) {
     let count = 1;
     let content = await page.content();
     if (isCloudflareCaptchaChallenge(content)) {
-      await handleCaptcha(content, request, options);
+      await handleCaptcha(content, axios, options);
     } else {
       while (isCloudflareJSChallenge(content)) {
         response = await page.waitForNavigation({
@@ -51,7 +51,7 @@ export async function fillCookiesJar(request, options) {
         }
       }
       if (isCloudflareCaptchaChallenge(content)) {
-        await handleCaptcha(content, request, options);
+        await handleCaptcha(content, axios, options);
       }
     }
 

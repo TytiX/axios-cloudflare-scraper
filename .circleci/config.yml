@@ -27,6 +27,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - run: apt-get install chromium
       - run: npm install
       - run:
           name: Run tests

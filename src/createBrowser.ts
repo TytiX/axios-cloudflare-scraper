@@ -9,31 +9,17 @@ const {
   HTTPS_PROXY
 } = process.env;
 
-let chromium;
-let puppeteerCore;
-try {
-  puppeteerCore = require('puppeteer');
-} catch (e) {}
-if (!puppeteerCore) {
-  try {
-    chromium = require('chrome-aws-lambda');
-    puppeteerCore = chromium.puppeteer;
-  } catch (e) {
-    throw new Error(
-      'Missing puppeteer dependency (yarn add puppeteer or yarn add puppeteer-core chrome-aws-lambda)'
-    );
-  }
-}
+import peppeteerCore from 'puppeteer';
 
-const puppeteer = addExtra(puppeteerCore);
+const puppeteer = addExtra(peppeteerCore);
 const stealth = StealthPlugin();
 puppeteer.use(stealth);
 
 export async function createBrowser(options) {
   const {
     proxy = HTTP_PROXY || HTTPS_PROXY,
-    browserWSEndpoint,
-    browserUrl,
+    // browserWSEndpoint,
+    // browserUrl,
     puppeteerOptions: userPuppeteerOptions = {}
   } = options;
   const ignoreHTTPSErrors = PUPPETEER_IGNORE_HTTPS_ERROR === 'true';
@@ -51,21 +37,12 @@ export async function createBrowser(options) {
   }
 
   let puppeteerOptions = {
+    executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || undefined,
     headless: PUPPETEER_HEADLESS === 'true',
     ignoreHTTPSErrors,
     ...userPuppeteerOptions,
     args
   };
-
-  if (chromium) {
-    puppeteerOptions = {
-      ...puppeteerOptions,
-      args: chromium.args.concat(args),
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless
-    };
-  }
 
   return await puppeteer.launch(puppeteerOptions);
 }
