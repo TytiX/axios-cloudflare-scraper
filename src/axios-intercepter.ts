@@ -35,18 +35,19 @@ function cloudflareResponseInterceptor(response) {
   return response;
 }
 
-async function cloudflareResponseErrorInterceptor(error) {
-  if (isCloudflareIUAMError(error)) {
-    try {
-      const { config } = error;
-      await fillCookiesJar(axios, config);
-      return await axios(config);
-    } catch (e) {
-      return Promise.reject(e);
+function cloudflareResponseErrorInterceptor(error) {
+  return new Promise( async (resolve, reject) => {
+    if (isCloudflareIUAMError(error)) {
+      try {
+        const { config } = error;
+        await fillCookiesJar(axios, config);
+        resolve(await axios(config));
+      } catch (e) {
+        reject(e);
+      }
     }
-  }
-  // throw error;
-  return Promise.reject(error);
+    reject(error);
+  });
 }
 
 export function axiosCloudflareScraper(axios) {

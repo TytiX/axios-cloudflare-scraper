@@ -60,8 +60,8 @@ export async function fillCookiesJar(axios, options) {
       jar.setCookieSync(convertCookieToTough(cookie), url, { loose: false });
     }
   } catch (e) {
-    console.log(e);
-  }finally {
+    throw new Error(e);
+  } finally {
     await browser.close();
   }
 }
