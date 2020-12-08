@@ -2,7 +2,10 @@
 #
 # Check {{ '/2.0/language-javascript/' | docs_url }} for more details
 #
-version: 2
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.1.1
 
 defaults: &defaults
   working_directory: ~/repo
@@ -27,7 +30,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: apt-get install chromium
+      - browser-tools/install-chrome
       - run: npm install
       - run:
           name: Run tests
